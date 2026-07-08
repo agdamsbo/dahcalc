@@ -38,7 +38,7 @@ days after the primary admission.
 }
 \examples{
 ## Load the data set
-data(synthetic_data, package = "DAHcalc")
+data(synthetic_data, package = "dahcalc")
 
 ## Quick look at the first few rows
 head(synthetic_data)

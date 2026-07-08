@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 library(data.table)   # fast data manipulation
 library(lubridate)   # date arithmetic
 library(ggplot2)      # plotting
-library(DAHcalc)     # <- the package we are documenting
+library(dahcalc)     # <- the package we are documenting
 
 # Make the vignette reproducible
 knitr::opts_chunk$set(echo = TRUE, comment = "#>")
@@ -47,10 +47,7 @@ All column names can be customised; you only need to tell the wrapper which colu
 The package ships a reproducible synthetic data set called `synthetic_data`.
 
 ```{r}
-
-# data("synthetic_data", package = "DAHcalc")
-# head(synthetic_data)
-synthetic_data <- DAHcalc::synthetic_data
+str(dahcalc::synthetic_data)
 ```
 
 The data already have the **canonical column names** that the pipeline expects:
@@ -72,7 +69,7 @@ could skip this step entirely if your file already uses the canonical names.
 
 ```{r}
 # Make a copy so we do not alter the original object
-my_dt <- data.table::copy(synthetic_data)
+my_dt <- dahcalc::synthetic_data
 
 # Suppose the user’s file uses the following names:
 #  pid, eid, etype, adm_start, adm_end, int_date, dod
@@ -177,7 +174,7 @@ home, how many had long institutional stays, and where deaths fall.
 When you have a real CSV file, the workflow is the same:
 
 ```{r eval=FALSE}
-my_real_data <- fread("my_clinical_file.csv")
+my_real_data <- read.csv("my_clinical_file.csv")
 
 # (optional) rename columns if they differ from the canonical ones
 # setnames(my_real_data, old = "...", new = "...")

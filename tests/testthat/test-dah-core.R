@@ -1,5 +1,5 @@
 library(testthat)
-library(DAHcalc)
+library(dahcalc)
 library(lubridate)
 
 # ---------------------------------------------------------------

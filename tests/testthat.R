@@ -7,9 +7,8 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(DAHcalc)
-library(data.table)
+library(dahcalc)
 library(lubridate)
 library(dplyr)
 
-test_check("DAHcalc")
+test_check("dahcalc")

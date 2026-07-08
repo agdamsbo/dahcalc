@@ -1,16 +1,13 @@
 Package: dahcalc
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
+Title: Calculate Days-at-Home
+Version: 2026.7.1
 Authors@R: c(
-    person(
-      "Jane", "Doe",
-      email = "jane@example.com",
-      role = c("aut", "cre")
-    )
+    person("Andreas Gammelgaard", "Damsbo",email="agdamsbo@clin.au.dk", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7559-1154")),
+    person("Kim Morgenstjerne", "Ørskov", role = c("aut"))
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Reference implementation of Days-at-Home evaluation pipeline ready 
+    for clinical data analysis.
 License: AGPL (>= 3)
 Encoding: UTF-8
 LazyData: true
