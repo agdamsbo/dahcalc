@@ -21,10 +21,9 @@ knitr::opts_chunk$set(
 
 ```{r setup, include=FALSE}
 # Packages needed only for the vignette (they are listed in Suggests:)
-library(data.table)   # fast data manipulation
-library(lubridate)   # date arithmetic
-library(ggplot2)      # plotting
-library(dahcalc)     # <- the package we are documenting
+library(lubridate)  
+library(ggplot2)    
+library(dahcalc)    
 
 # Make the vignette reproducible
 knitr::opts_chunk$set(echo = TRUE, comment = "#>")
@@ -42,7 +41,13 @@ All column names can be customised; you only need to tell the wrapper which colu
 
 ---
 
-## 1️⃣ Load the example data set  
+## 1️⃣ Get the package and load the example data set  
+
+```{r eval=FALSE}
+pak::pak("agdamsbo/dahcalc")
+library(dahcalc)
+```
+
 
 The package ships a reproducible synthetic data set called `synthetic_data`.
 
