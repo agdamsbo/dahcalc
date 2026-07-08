@@ -224,9 +224,9 @@ str(res, max.level = 1)
 #>     super:  <ggproto object: Class Guides, gg> 
 #>   ..@ mapping    : <ggplot2::mapping> List of 2
 #>  .. .. $ x   : language ~dah
-#>  .. ..  ..- attr(*, ".Environment")=<environment: 0x5634ad5691e0> 
+#>  .. ..  ..- attr(*, ".Environment")=<environment: 0x557ef1a2da30> 
 #>  .. .. $ fill: language ~died_in_window
-#>  .. ..  ..- attr(*, ".Environment")=<environment: 0x5634ad5691e0> 
+#>  .. ..  ..- attr(*, ".Environment")=<environment: 0x557ef1a2da30> 
 #>   ..@ theme      : <theme> List of 144
 #>  .. .. $ line                            : <ggplot2::element_line>
 #>  .. ..  ..@ colour       : chr "black"
@@ -672,7 +672,7 @@ str(res, max.level = 1)
 #>  .. .. $ y    : chr "Number of patients"
 #>  .. .. $ title: chr "Distribution of Days At Home (30-day window)"
 #>   ..@ meta       : list()
-#>   ..@ plot_env   :<environment: 0x5634ad5691e0> 
+#>   ..@ plot_env   :<environment: 0x557ef1a2da30> 
 #>  $ overlap_flag  :'data.frame':  38 obs. of  2 variables:
 #>  $ column_mapping: Named chr [1:7] "pid" "eid" "etype" "adm_start" ...
 #>   ..- attr(*, "names")= chr [1:7] "patient_id" "event_id" "event_type" "start_date" ...

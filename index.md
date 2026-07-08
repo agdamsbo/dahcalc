@@ -5,7 +5,7 @@ here: <https://github.com/monash-neurointervention/uia-dah30>
 
 This is still a work in progress.
 
-# Get the package
+## Get the package
 
 Use `pak` to get the package from GitHub:
 
@@ -13,3 +13,10 @@ Use `pak` to get the package from GitHub:
     library(dahcalc)
 
 When the package has matured, we are heading for CRAN.
+
+## Code of Conduct
+
+Please note that the dahcalc project is released with a [Contributor
+Code of
+Conduct](https://agdamsbo.github.io/dahcalc/CODE_OF_CONDUCT.html). By
+contributing to this project, you agree to abide by its terms.
