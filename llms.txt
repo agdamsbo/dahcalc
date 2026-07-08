@@ -1,0 +1,47 @@
+# Days at Home *R* pipeline
+
+This is an *R* reference pipeline for the Days-at-Home metric as oulined
+here: <https://github.com/monash-neurointervention/uia-dah30>
+
+This is still a work in progress.
+
+# Get the package
+
+Use `pak` to get the package from GitHub:
+
+    pak::pak("agdamsbo/dahcalc")
+    library(dahcalc)
+
+When the package has matured, we are heading for CRAN.
+
+# Package index
+
+## All functions
+
+- [`apply_window_and_death()`](https://agdamsbo.github.io/dahcalc/reference/apply_window_and_death.md)
+  : Add observation window and death‑inside‑window flag.
+- [`compute_dah()`](https://agdamsbo.github.io/dahcalc/reference/compute_dah.md)
+  : Compute Days‑At‑Home per patient.
+- [`count_institutional_days()`](https://agdamsbo.github.io/dahcalc/reference/count_institutional_days.md)
+  : Count institutional days inside the window.
+- [`extract_institutional()`](https://agdamsbo.github.io/dahcalc/reference/extract_institutional.md)
+  : Extract hospital / rehabilitation stays.
+- [`extract_primary()`](https://agdamsbo.github.io/dahcalc/reference/extract_primary.md)
+  : Extract the primary admission.
+- [`merge_overlaps()`](https://agdamsbo.github.io/dahcalc/reference/merge_overlaps.md)
+  : Merge overlapping / adjacent intervals.
+- [`plot_dah_distribution()`](https://agdamsbo.github.io/dahcalc/reference/plot_dah_distribution.md)
+  : Plot the DAH distribution.
+- [`run_dah_pipeline()`](https://agdamsbo.github.io/dahcalc/reference/run_dah_pipeline.md)
+  : Run the whole DAH pipeline.
+- [`summarise_cohort()`](https://agdamsbo.github.io/dahcalc/reference/summarise_cohort.md)
+  : Summarise DAH at the cohort level.
+- [`validate_events()`](https://agdamsbo.github.io/dahcalc/reference/validate_events.md)
+  : Validate the long‑format event data.
+
+# Articles
+
+### All vignettes
+
+- [Get
+  started](https://agdamsbo.github.io/dahcalc/articles/get_started.md):
