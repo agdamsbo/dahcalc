@@ -1,0 +1,201 @@
+---
+title: "Get started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{get_started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+author: 
+  - "Andreas G. Damsbo"
+date: "`r Sys.Date()`"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  eval = TRUE,
+  comment = "#>"
+)
+```
+
+
+```{r setup, include=FALSE}
+# Packages needed only for the vignette (they are listed in Suggests:)
+library(data.table)   # fast data manipulation
+library(lubridate)   # date arithmetic
+library(ggplot2)      # plotting
+library(DAHcalc)     # <- the package we are documenting
+
+# Make the vignette reproducible
+knitr::opts_chunk$set(echo = TRUE, comment = "#>")
+```
+
+## What the DAH pipeline does  
+
+The **DAH (Days‑At‑Home)** pipeline takes a *long‑format* table of clinical events and calculates, for each patient, how many days out of a user‑defined window (default 30 days) they spent **at home**.  
+
+*Primary admission* → start of the window.  
+*Hospital* or *rehabilitation* stays → days **not** at home.  
+If a patient dies **inside** the window, their DAH is set to **0**.  
+
+All column names can be customised; you only need to tell the wrapper which columns correspond to the required concepts.
+
+---
+
+## 1️⃣ Load the example data set  
+
+The package ships a reproducible synthetic data set called `synthetic_data`.
+
+```{r}
+
+# data("synthetic_data", package = "DAHcalc")
+# head(synthetic_data)
+synthetic_data <- DAHcalc::synthetic_data
+```
+
+The data already have the **canonical column names** that the pipeline expects:
+
+* `patient_id`
+* `event_id`
+* `event_type` (`"primary"`, `"hospital"`, `"rehabilitation"` or `"death"`)
+* `start_date`, `end_date`
+* `intervention_date` (only filled for the primary admission)
+* `death_date` (filled only for rows of type `"death"`)
+
+---
+
+## 2️⃣ (Optional) Rename columns to match your own file  
+
+If your own CSV uses different names you can rename them before calling the
+pipeline.  For demonstration we rename them to a lower‑case scheme, but you
+could skip this step entirely if your file already uses the canonical names.
+
+```{r}
+# Make a copy so we do not alter the original object
+my_dt <- data.table::copy(synthetic_data)
+
+# Suppose the user’s file uses the following names:
+#  pid, eid, etype, adm_start, adm_end, int_date, dod
+setnames(
+  my_dt,
+  old = c(
+    "patient_id",
+    "event_id",
+    "event_type",
+    "start_date",
+    "end_date",
+    "intervention_date",
+    "death_date"
+  ),
+  new = c("pid", "eid", "etype", "adm_start",
+          "adm_end", "int_date", "dod")
+)
+
+head(my_dt)
+```
+
+Now `my_dt` looks like the data a user might supply.
+
+---
+
+## 3️⃣ Run the DAH pipeline  
+
+Tell the wrapper the names you are using (or skip the arguments if you kept
+the canonical names).  
+
+```{r}
+res <- run_dah_pipeline(
+  data_long             = my_dt,
+  window_days           = 30,        # 30‑day observation window
+  patient_id_col        = "pid",
+  event_id_col          = "eid",
+  event_type_col        = "etype",
+  start_date_col        = "adm_start",
+  end_date_col          = "adm_end",
+  intervention_date_col = "int_date",
+  death_date_col        = "dod",
+  verbose               = TRUE,      # prints a short validation summary
+  keep_original_names   = TRUE        # keep the user’s column names in the output
+)
+
+# The result is a list with three main components:
+str(res, max.level = 1)
+```
+
+* `res$per_patient` – one row per patient with DAH values.  
+* `res$cohort_summary` – aggregated statistics for the whole cohort.  
+* `res$plot` – a ggplot object showing the DAH distribution.
+
+---
+
+## 4️⃣ Look at the cohort‑level summary  
+
+```{r}
+print(res$cohort_summary)
+```
+
+Typical output shows:
+
+* number of patients,
+* mean / median / SD of DAH,
+* percentage with **full** 30 days at home,
+* DAH per 100 person‑days, etc.
+
+---
+
+## 5️⃣ Inspect the per‑patient table  
+
+```{r}
+head(res$per_patient, 10)
+```
+
+Key columns you’ll see:
+
+| column | meaning |
+|--------|---------|
+| `pid` (or `patient_id`) | patient identifier |
+| `dah` | days at home within the window (0 if death occurs inside) |
+| `effective_window` | length of the observation window actually used (shorter when death occurs) |
+| `institutional_days` | number of days spent in hospital/rehab |
+| `died_in_window` | `TRUE` if death happened inside the window |
+
+---
+
+## 6️⃣ Visualise the DAH distribution  
+
+```{r}
+print(res$plot)   # displays a histogram with a vertical line at 30 days
+```
+
+The histogram lets you quickly see how many patients spent all 30 days at
+home, how many had long institutional stays, and where deaths fall.
+
+---
+
+## 7️⃣ What to do with your own data  
+
+When you have a real CSV file, the workflow is the same:
+
+```{r eval=FALSE}
+my_real_data <- fread("my_clinical_file.csv")
+
+# (optional) rename columns if they differ from the canonical ones
+# setnames(my_real_data, old = "...", new = "...")
+
+result <- run_dah_pipeline(
+  dt_long               = my_real_data,
+  patient_id_col        = "my_id",
+  event_id_col          = "my_event_id",
+  event_type_col        = "my_type",
+  start_date_col        = "my_start",
+  end_date_col          = "my_end",
+  intervention_date_col = "my_intervention",
+  death_date_col        = "my_death",
+  window_days           = 30,
+  keep_original_names   = TRUE
+)
+
+# Then explore result$cohort_summary, result$per_patient, result$plot …
+```
+
+That’s all you need to obtain **Days‑At‑Home** metrics for any data set that follows the required event structure.
