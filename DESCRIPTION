@@ -24,5 +24,5 @@ Imports:
     dplyr,
     ggplot2,
     lubridate
-URL: https://github.com/agdamsbo/dahcalc
+URL: https://github.com/agdamsbo/dahcalc, https://agdamsbo.github.io/dahcalc/
 BugReports: https://github.com/agdamsbo/dahcalc/issues
