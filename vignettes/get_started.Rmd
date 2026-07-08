@@ -78,18 +78,9 @@ my_dt <- dahcalc::synthetic_data
 
 # Suppose the user’s file uses the following names:
 #  pid, eid, etype, adm_start, adm_end, int_date, dod
-setnames(
+my_dt <- setNames(
   my_dt,
-  old = c(
-    "patient_id",
-    "event_id",
-    "event_type",
-    "start_date",
-    "end_date",
-    "intervention_date",
-    "death_date"
-  ),
-  new = c("pid", "eid", "etype", "adm_start",
+  c("pid", "eid", "etype", "adm_start",
           "adm_end", "int_date", "dod")
 )
 
