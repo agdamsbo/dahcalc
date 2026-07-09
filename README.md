@@ -2,9 +2,8 @@
 # Days at Home *R* pipeline
 
 <!-- badges: start -->
-[![Codecov test coverage](https://codecov.io/gh/agdamsbo/dahcalc/graph/badge.svg)](https://app.codecov.io/gh/agdamsbo/dahcalc)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/agdamsbo/dahcalc/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/agdamsbo/dahcalc/actions/workflows/R-CMD-check.yaml)
+[![RHub](https://github.com/agdamsbo/dahcalc/actions/workflows/rhub.yaml/badge.svg)](https://github.com/agdamsbo/dahcalc/actions/workflows/rhub.yaml)
 <!-- badges: end -->
 
 This is an *R* reference pipeline for the Days-at-Home metric as outlined here: https://github.com/monash-neurointervention/uia-dah30
