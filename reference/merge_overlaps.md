@@ -1,6 +1,6 @@
-# Merge overlapping / adjacent intervals.
+# Merge overlapping or adjacent institutional intervals per patient
 
-Merge overlapping / adjacent intervals.
+Merge overlapping or adjacent institutional intervals per patient
 
 ## Usage
 
@@ -12,8 +12,8 @@ merge_overlaps(inst_data)
 
 - inst_data:
 
-  data.frame with \`patient_id\`, \`start\`, \`end\`.
+  Data.frame with \`patient_id\`, \`start\`, \`end\` (integer days).
 
 ## Value
 
-Data.frame with merged intervals per patient.
+Data.frame with merged intervals (still integer days).

@@ -74,50 +74,9 @@ head(synthetic_data)
 
 ## Run the DAH pipeline on the synthetic data
 result <- run_dah_pipeline(synthetic_data, window_days = 30)
-#> 
-#> === Validation summary ===
-#>    patient_id overlap
-#> 1           1   FALSE
-#> 2           2   FALSE
-#> 3           3   FALSE
-#> 4           4   FALSE
-#> 5           5   FALSE
-#> 6           6   FALSE
-#> 7           7   FALSE
-#> 8           8   FALSE
-#> 9           9   FALSE
-#> 10         10   FALSE
-#> 11         11   FALSE
-#> 12         12   FALSE
-#> 13         13   FALSE
-#> 14         14   FALSE
-#> 15         15   FALSE
-#> 16         16   FALSE
-#> 17         18   FALSE
-#> 18         19   FALSE
-#> 19         20   FALSE
-#> 20         21   FALSE
-#> 21         22   FALSE
-#> 22         23   FALSE
-#> 23         24   FALSE
-#> 24         25   FALSE
-#> 25         26   FALSE
-#> 26         27   FALSE
-#> 27         28   FALSE
-#> 28         29   FALSE
-#> 29         30   FALSE
-#> 30         31   FALSE
-#> 31         32   FALSE
-#> 32         33   FALSE
-#> 33         34   FALSE
-#> 34         36   FALSE
-#> 35         37   FALSE
-#> 36         39   FALSE
-#> 37         40   FALSE
-#> 38         NA   FALSE
 result$cohort_summary
-#>     window_days n_patients mean_dah median_dah sd_dah q25_dah q75_dah
-#> 25%          30         40    13.03       13.5   9.52       6   20.25
+#>     window_days n_patients n_deaths mean_dah median_dah sd_dah q25_dah q75_dah
+#> 25%          30         40       10    13.03       13.5   9.52       6   20.25
 #>     pct_full_home mean_effective_window_days dah_per_100_pt_days
-#> 25%             5                       26.9               48.42
+#> 25%             5                         30               43.42
 ```

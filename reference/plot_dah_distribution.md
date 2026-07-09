@@ -1,6 +1,6 @@
-# Plot the DAH distribution.
+# Plot the distribution of Days‑At‑Home
 
-Plot the DAH distribution.
+Plot the distribution of Days‑At‑Home
 
 ## Usage
 
@@ -12,12 +12,12 @@ plot_dah_distribution(data, window_days = 30L)
 
 - data:
 
-  per‑patient result from \`compute_dah\`.
+  Per‑patient result from \`compute_dah()\`.
 
 - window_days:
 
-  observation window length (default = 30).
+  Observation window length (default = 30).
 
 ## Value
 
-A \`ggplot2\` object.
+A ggplot2 object (single‑colour histogram).

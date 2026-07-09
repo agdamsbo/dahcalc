@@ -1,6 +1,6 @@
-# Extract the primary admission.
+# Extract the primary admission record
 
-Extract the primary admission.
+Extract the primary admission record
 
 ## Usage
 
@@ -18,7 +18,7 @@ extract_primary(
 
 - data:
 
-  validated data.frame.
+  Output of \`validate_events()\` (canonical column names).
 
 - patient_id_col:
 
@@ -30,7 +30,8 @@ extract_primary(
 
 - intervention_date_col:
 
-  column name for intervention date (default \`"intervention_date"\`).
+  column name for the primary intervention date (default
+  \`"intervention_date"\`).
 
 - death_date_col:
 

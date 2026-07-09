@@ -1,6 +1,6 @@
-# Summarise DAH at the cohort level.
+# Summarise DAH at the cohort level (adds number of deaths)
 
-Summarise DAH at the cohort level.
+Summarise DAH at the cohort level (adds number of deaths)
 
 ## Usage
 
@@ -12,12 +12,12 @@ summarise_cohort(data, window_days = 30L)
 
 - data:
 
-  per‑patient result from \`compute_dah\`.
+  Per‑patient result returned by \`compute_dah()\`.
 
 - window_days:
 
-  observation window length (default = 30).
+  Observation window length (default = 30).
 
 ## Value
 
-One‑row data.frame with summary statistics.
+One‑row data.frame with summary statistics, including \`n_deaths\`.

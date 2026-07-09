@@ -1,6 +1,6 @@
-# Run the whole DAH pipeline.
+# Run the whole DAH pipeline (dates returned as \`Date\` objects)
 
-Accepts a long‑format data.frame and optional column‑name mappings.
+Run the whole DAH pipeline (dates returned as \`Date\` objects)
 
 ## Usage
 
@@ -24,11 +24,11 @@ run_dah_pipeline(
 
 - data_long:
 
-  raw data (\`data.frame\` or \`data.table\`).
+  Raw long‑format data (\`data.frame\` or \`data.table\`).
 
 - window_days:
 
-  observation window length (default = 30).
+  Observation window length (default = 30).
 
 - patient_id_col:
 
@@ -52,7 +52,8 @@ run_dah_pipeline(
 
 - intervention_date_col:
 
-  column name for intervention date (default \`"intervention_date"\`).
+  column name for the primary intervention date (default
+  \`"intervention_date"\`).
 
 - death_date_col:
 
@@ -60,14 +61,16 @@ run_dah_pipeline(
 
 - verbose:
 
-  logical; print overlapping‑stay summary (default = TRUE).
+  Logical; retained for backward compatibility but has no effect
+  (default = `TRUE`).
 
 - keep_original_names:
 
-  logical; if TRUE, keep the user‑supplied column names in the
-  per‑patient output.
+  If `TRUE`, the output keeps the user‑supplied column names (default =
+  `FALSE`).
 
 ## Value
 
-List with \`per_patient\`, \`cohort_summary\`, \`plot\`,
-\`overlap_flag\`, \`column_mapping\`.
+List with \`per_patient\`, \`cohort_summary\`, \`plot\`, and
+\`column_mapping\`. All date columns in \`per_patient\` are \`Date\`
+objects.

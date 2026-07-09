@@ -1,8 +1,9 @@
-# Validate the long‑format event data.
+# Validate the long‑format event data
 
-Ensures required columns exist, that they are Dates, that each patient
-has exactly one primary event, that start ≤ end, and flags overlapping
-hospital/rehab stays (report‑only).
+Checks required columns, coerces all date columns to \`Date\`, validates
+a single primary event per patient and that start ≤ end. Overlap
+detection is performed internally (required for merging) but \*\*no
+overlap flag is returned\*\*.
 
 ## Usage
 
@@ -23,7 +24,7 @@ validate_events(
 
 - data:
 
-  \`data.frame\` containing the events.
+  \`data.frame\` (or coercible) containing the event records.
 
 - patient_id_col:
 
@@ -56,5 +57,4 @@ validate_events(
 
 ## Value
 
-List with \`valid_data\` (a copy of the input) and \`overlap_flag\`
-(data.frame: \`patient_id\`, \`overlap\` logical).
+A \*\*cleaned data.frame\*\* whose date columns are \`Date\` objects.

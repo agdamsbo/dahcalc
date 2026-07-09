@@ -1,6 +1,6 @@
-# Extract hospital / rehabilitation stays.
+# Extract hospital / rehabilitation stays (as integer days)
 
-Extract hospital / rehabilitation stays.
+Extract hospital / rehabilitation stays (as integer days)
 
 ## Usage
 
@@ -18,7 +18,7 @@ extract_institutional(
 
 - data:
 
-  validated data.frame.
+  Output of \`validate_events()\`.
 
 - patient_id_col:
 
@@ -30,12 +30,12 @@ extract_institutional(
 
 - start_date_col:
 
-  column name for start date.
+  column name for stay start date.
 
 - end_date_col:
 
-  column name for end date.
+  column name for stay end date.
 
 ## Value
 
-Data.frame with \`patient_id\`, \`start\`, \`end\` (integer days).
+Data.frame with \`patient_id\`, \`start\`, \`end\` (both integer days).

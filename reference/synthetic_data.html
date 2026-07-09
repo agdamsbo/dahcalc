@@ -173,52 +173,11 @@ days after the primary admission.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Run the DAH pipeline on the synthetic data</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_dah_pipeline.html">run_dah_pipeline</a></span><span class="op">(</span><span class="va">synthetic_data</span>, window_days <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> === Validation summary ===</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    patient_id overlap</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           1   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2           2   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3           3   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4           4   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5           5   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6           6   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7           7   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8           8   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9           9   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10         10   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11         11   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12         12   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13         13   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14         14   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15         15   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16         16   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17         18   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18         19   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19         20   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20         21   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21         22   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22         23   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23         24   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24         25   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25         26   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26         27   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27         28   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28         29   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29         30   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30         31   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31         32   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32         33   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33         34   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34         36   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35         37   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36         39   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37         40   FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38         NA   FALSE</span>
 <span class="r-in"><span><span class="va">result</span><span class="op">$</span><span class="va">cohort_summary</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     window_days n_patients mean_dah median_dah sd_dah q25_dah q75_dah</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25%          30         40    13.03       13.5   9.52       6   20.25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     window_days n_patients n_deaths mean_dah median_dah sd_dah q25_dah q75_dah</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25%          30         40       10    13.03       13.5   9.52       6   20.25</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     pct_full_home mean_effective_window_days dah_per_100_pt_days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25%             5                       26.9               48.42</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25%             5                         30               43.42</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
