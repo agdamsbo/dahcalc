@@ -2,7 +2,7 @@
 % Please edit documentation in R/pipeline.R
 \name{extract_primary}
 \alias{extract_primary}
-\title{Extract the primary admission.}
+\title{Extract the primary admission record}
 \usage{
 extract_primary(
   data,
@@ -13,13 +13,13 @@ extract_primary(
 )
 }
 \arguments{
-\item{data}{validated data.frame.}
+\item{data}{Output of `validate_events()` (canonical column names).}
 
 \item{patient_id_col}{column name for patient ID (default `"patient_id"`).}
 
 \item{event_type_col}{column name for event type (default `"event_type"`).}
 
-\item{intervention_date_col}{column name for intervention date
+\item{intervention_date_col}{column name for the primary intervention date
 (default `"intervention_date"`).}
 
 \item{death_date_col}{column name for death date (default `"death_date"`).}
@@ -28,5 +28,5 @@ extract_primary(
 Data.frame with `patient_id`, `intervention_date`, `death_date`.
 }
 \description{
-Extract the primary admission.
+Extract the primary admission record
 }

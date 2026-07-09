@@ -2,21 +2,20 @@
 % Please edit documentation in R/pipeline.R
 \name{compute_dah}
 \alias{compute_dah}
-\title{Compute Days‑At‑Home per patient.}
+\title{Compute Days‑At‑Home per patient}
 \usage{
 compute_dah(win_data, inst_counts, window_days = 30L)
 }
 \arguments{
-\item{win_data}{output of `apply_window_and_death`.}
+\item{win_data}{Output of `apply_window_and_death()`.}
 
-\item{inst_counts}{output of `count_institutional_days`.}
+\item{inst_counts}{Output of `count_institutional_days()`.}
 
-\item{window_days}{length of observation window (default = 30).}
+\item{window_days}{Length of the observation window (default = 30).}
 }
 \value{
-Data.frame with `patient_id`, `dah`,
-  `effective_window`, `institutional_days`, `died_in_window`.
+Data.frame with per‑patient results.  All date columns are `Date`.
 }
 \description{
-Compute Days‑At‑Home per patient.
+Compute Days‑At‑Home per patient
 }

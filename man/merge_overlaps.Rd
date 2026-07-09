@@ -2,16 +2,16 @@
 % Please edit documentation in R/pipeline.R
 \name{merge_overlaps}
 \alias{merge_overlaps}
-\title{Merge overlapping / adjacent intervals.}
+\title{Merge overlapping or adjacent institutional intervals per patient}
 \usage{
 merge_overlaps(inst_data)
 }
 \arguments{
-\item{inst_data}{data.frame with `patient_id`, `start`, `end`.}
+\item{inst_data}{Data.frame with `patient_id`, `start`, `end` (integer days).}
 }
 \value{
-Data.frame with merged intervals per patient.
+Data.frame with merged intervals (still integer days).
 }
 \description{
-Merge overlapping / adjacent intervals.
+Merge overlapping or adjacent institutional intervals per patient
 }

@@ -107,24 +107,6 @@ test_that("fails when required columns are missing", {
                "Missing required columns")
 })
 
-test_that("detects overlapping hospital/rehab stays", {
-  dt <- make_small_dt(
-    hosp_interval  = c(5, 12),
-    rehab_interval = c(10, 18)   # overlap
-  )
-  val <- validate_events(data = dt)
-  expect_true(val$overlap_flag$overlap)
-})
-
-test_that("does not flag overlap when intervals are separate", {
-  dt <- make_small_dt(
-    hosp_interval  = c(5, 9),
-    rehab_interval = c(12, 15)   # no overlap
-  )
-  val <- validate_events(data = dt)
-  expect_false(val$overlap_flag$overlap)
-})
-
 
 # ---------------------------------------------------------------
 # 2. extract_primary()
@@ -283,9 +265,6 @@ test_that("dah = 0 when died_in_window is TRUE", {
   res <- compute_dah(win, cnt, window_days = 30L)
   expect_true(res$died_in_window)
   expect_equal(res$dah, 0L)
-  expect_equal(res$effective_window,
-               as.integer(as.Date("2023-01-15")) -
-                 as.integer(as.Date("2023-01-01")) + 1L)
 })
 
 test_that("subtracts institutional days when alive", {

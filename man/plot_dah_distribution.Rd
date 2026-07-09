@@ -2,18 +2,18 @@
 % Please edit documentation in R/pipeline.R
 \name{plot_dah_distribution}
 \alias{plot_dah_distribution}
-\title{Plot the DAH distribution.}
+\title{Plot the distribution of Days‑At‑Home}
 \usage{
 plot_dah_distribution(data, window_days = 30L)
 }
 \arguments{
-\item{data}{per‑patient result from `compute_dah`.}
+\item{data}{Per‑patient result from `compute_dah()`.}
 
-\item{window_days}{observation window length (default = 30).}
+\item{window_days}{Observation window length (default = 30).}
 }
 \value{
-A `ggplot2` object.
+A ggplot2 object (single‑colour histogram).
 }
 \description{
-Plot the DAH distribution.
+Plot the distribution of Days‑At‑Home
 }

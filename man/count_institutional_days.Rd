@@ -2,19 +2,21 @@
 % Please edit documentation in R/pipeline.R
 \name{count_institutional_days}
 \alias{count_institutional_days}
-\title{Count institutional days inside the window.}
+\title{Count institutional days that fall inside the (full) observation window}
 \usage{
 count_institutional_days(inst_data, win_data)
 }
 \arguments{
-\item{inst_data}{data.frame with merged intervals (`patient_id`, `start`, `end`).}
+\item{inst_data}{Data.frame with merged intervals (`patient_id`, `start`,
+`end`) – integer days.}
 
-\item{win_data}{data.frame from `apply_window_and_death`
-(must contain `patient_id`, `window_start`, `window_end`).}
+\item{win_data}{Data.frame from `apply_window_and_death()` that must
+contain `patient_id`, `window_start`, `window_end` and `died_in_window`.}
 }
 \value{
-Data.frame with `patient_id`, `institutional_days`.
+Data.frame with `patient_id` and `institutional_days`.  If a patient
+  died inside the window the count is forced to 0.
 }
 \description{
-Count institutional days inside the window.
+Count institutional days that fall inside the (full) observation window
 }

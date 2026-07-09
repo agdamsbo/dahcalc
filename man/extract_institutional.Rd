@@ -2,7 +2,7 @@
 % Please edit documentation in R/pipeline.R
 \name{extract_institutional}
 \alias{extract_institutional}
-\title{Extract hospital / rehabilitation stays.}
+\title{Extract hospital / rehabilitation stays (as integer days)}
 \usage{
 extract_institutional(
   data,
@@ -13,19 +13,19 @@ extract_institutional(
 )
 }
 \arguments{
-\item{data}{validated data.frame.}
+\item{data}{Output of `validate_events()`.}
 
 \item{patient_id_col}{column name for patient ID.}
 
 \item{event_type_col}{column name for event type.}
 
-\item{start_date_col}{column name for start date.}
+\item{start_date_col}{column name for stay start date.}
 
-\item{end_date_col}{column name for end date.}
+\item{end_date_col}{column name for stay end date.}
 }
 \value{
-Data.frame with `patient_id`, `start`, `end` (integer days).
+Data.frame with `patient_id`, `start`, `end` (both integer days).
 }
 \description{
-Extract hospital / rehabilitation stays.
+Extract hospital / rehabilitation stays (as integer days)
 }

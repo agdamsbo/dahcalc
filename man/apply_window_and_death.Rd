@@ -2,7 +2,7 @@
 % Please edit documentation in R/pipeline.R
 \name{apply_window_and_death}
 \alias{apply_window_and_death}
-\title{Add observation window and death‑inside‑window flag.}
+\title{Add observation window and flag deaths inside the window}
 \usage{
 apply_window_and_death(
   primary_data,
@@ -12,18 +12,18 @@ apply_window_and_death(
 )
 }
 \arguments{
-\item{primary_data}{data.frame from `extract_primary`.}
+\item{primary_data}{Data.frame from `extract_primary()`.}
 
-\item{window_days}{integer length of the observation window (default = 30).}
+\item{window_days}{Integer length of the observation window (default = 30).}
 
-\item{intervention_date_col}{column name for intervention date.}
+\item{intervention_date_col}{column name for the intervention date.}
 
 \item{death_date_col}{column name for death date.}
 }
 \value{
-`primary_data` with `window_start`, `window_end`,
-  and `died_in_window` columns.
+`primary_data` with integer `window_start`, `window_end`
+  and logical `died_in_window`.  Original Date columns are untouched.
 }
 \description{
-Add observation window and death‑inside‑window flag.
+Add observation window and flag deaths inside the window
 }

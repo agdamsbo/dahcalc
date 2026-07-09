@@ -2,6 +2,7 @@
 
 library(purrr)
 library(dplyr)
+library(lubridate)
 
 set.seed(2026)
 
@@ -92,9 +93,7 @@ long_dt <- dplyr::bind_rows(list(
   death_rows
 ))
 
-setorder(long_dt, patient_id, event_id)
-
-synthetic_data <- long_dt
+synthetic_data<-dplyr::arrange(long_dt, patient_id, event_id)
 
 
 usethis::use_data(synthetic_data, overwrite = TRUE)

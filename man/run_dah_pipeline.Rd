@@ -2,7 +2,7 @@
 % Please edit documentation in R/pipeline.R
 \name{run_dah_pipeline}
 \alias{run_dah_pipeline}
-\title{Run the whole DAH pipeline.}
+\title{Run the whole DAH pipeline (dates returned as `Date` objects)}
 \usage{
 run_dah_pipeline(
   data_long,
@@ -19,9 +19,9 @@ run_dah_pipeline(
 )
 }
 \arguments{
-\item{data_long}{raw data (`data.frame` or `data.table`).}
+\item{data_long}{Raw long‑format data (`data.frame` or `data.table`).}
 
-\item{window_days}{observation window length (default = 30).}
+\item{window_days}{Observation window length (default = 30).}
 
 \item{patient_id_col}{column name for patient ID (default `"patient_id"`).}
 
@@ -33,20 +33,21 @@ run_dah_pipeline(
 
 \item{end_date_col}{column name for end date (default `"end_date"`).}
 
-\item{intervention_date_col}{column name for intervention date
+\item{intervention_date_col}{column name for the primary intervention date
 (default `"intervention_date"`).}
 
 \item{death_date_col}{column name for death date (default `"death_date"`).}
 
-\item{verbose}{logical; print overlapping‑stay summary (default = TRUE).}
+\item{verbose}{Logical; retained for backward compatibility but has no
+effect (default = \code{TRUE}).}
 
-\item{keep_original_names}{logical; if TRUE, keep the user‑supplied column
-names in the per‑patient output.}
+\item{keep_original_names}{If \code{TRUE}, the output keeps the user‑supplied
+column names (default = \code{FALSE}).}
 }
 \value{
 List with `per_patient`, `cohort_summary`, `plot`,
-  `overlap_flag`, `column_mapping`.
+  and `column_mapping`.  All date columns in `per_patient` are `Date` objects.
 }
 \description{
-Accepts a long‑format data.frame and optional column‑name mappings.
+Run the whole DAH pipeline (dates returned as `Date` objects)
 }
