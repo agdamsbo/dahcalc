@@ -111,8 +111,7 @@ res <- run_dah_pipeline(
   keep_original_names   = TRUE        # keep the user’s column names in the output
 )
 
-# The result is a list with three main components:
-str(res, max.level = 1)
+names(res)
 ```
 
 * `res$per_patient` – one row per patient with DAH values.  
