@@ -1,0 +1,29 @@
+# Merge overlapping intervals (all rows with a start_date are used)
+
+Intervals are merged \*\*only when they truly overlap\*\* (\`new_start
+\<= current_end\`). Touching intervals (e.g. one ends on day 5 and the
+next starts on day 6) are left separate.
+
+## Usage
+
+``` r
+merge_intervals(
+  df,
+  patient_id_col = "patient_id",
+  start_date_col = "start_date",
+  end_date_col = "end_date"
+)
+```
+
+## Arguments
+
+- df:
+
+  A \`data.frame\` that must contain the columns \`patient_id\`,
+  \`start_date\`, \`end_date\`. \`end_date\` may be \`NA\` (open‑ended
+  interval).
+
+## Value
+
+A \`data.frame\` with columns \`patient_id\`, \`start\`, \`end\` (both
+integer days since 1970‑01‑01). One row per merged interval.

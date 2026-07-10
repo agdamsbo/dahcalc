@@ -1,18 +1,20 @@
 # Plot the distribution of Days‑At‑Home
 
-Plot the distribution of Days‑At‑Home
+A histogram where bars are coloured by death‑in‑window status, with a
+vertical line for the window length and another for the median DAH. The
+y‑axis shows only whole numbers.
 
 ## Usage
 
 ``` r
-plot_dah_distribution(data, window_days = 30L)
+plot_dah_distribution(per_pat, window_days = 30L)
 ```
 
 ## Arguments
 
-- data:
+- per_pat:
 
-  Per‑patient result from \`compute_dah()\`.
+  Data.frame produced by \`compute_dah_per_patient()\`.
 
 - window_days:
 
@@ -20,4 +22,4 @@ plot_dah_distribution(data, window_days = 30L)
 
 ## Value
 
-A ggplot2 object (single‑colour histogram).
+A \*\*ggplot2\*\* object.

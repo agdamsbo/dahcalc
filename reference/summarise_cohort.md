@@ -1,23 +1,27 @@
-# Summarise DAH at the cohort level (adds number of deaths)
+# Summarise DAH at the cohort level
 
-Summarise DAH at the cohort level (adds number of deaths)
+Provides descriptive statistics for a cohort, including the number of
+deaths that occurred inside the observation window.
 
 ## Usage
 
 ``` r
-summarise_cohort(data, window_days = 30L)
+summarise_cohort(per_pat, window_days = 30L)
 ```
 
 ## Arguments
 
-- data:
+- per_pat:
 
-  Per‑patient result returned by \`compute_dah()\`.
+  Data.frame returned by \`compute_dah_per_patient()\`.
 
 - window_days:
 
-  Observation window length (default = 30).
+  Length of the observation window (default = 30).
 
 ## Value
 
-One‑row data.frame with summary statistics, including \`n_deaths\`.
+A one‑row data.frame with summary statistics: \`window_days\`,
+\`n_patients\`, \`n_deaths\`, mean/median/SD, inter‑quartile range,
+proportion with full home days, mean effective window, and DAH per 100
+patient‑days.

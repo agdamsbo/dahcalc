@@ -76,7 +76,7 @@ head(synthetic_data)
 result <- run_dah_pipeline(synthetic_data, window_days = 30)
 result$cohort_summary
 #>     window_days n_patients n_deaths mean_dah median_dah sd_dah q25_dah q75_dah
-#> 25%          30         40       10    13.03       13.5   9.52       6   20.25
+#> 25%          30         40       12     9.68         10   8.72       0      18
 #>     pct_full_home mean_effective_window_days dah_per_100_pt_days
-#> 25%             5                         30               43.42
+#> 25%             0                         30               32.25
 ```

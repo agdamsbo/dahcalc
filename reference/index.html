@@ -46,45 +46,17 @@
 
       <dl><dt>
 
-          <code><a href="apply_window_and_death.html">apply_window_and_death()</a></code>
+          <code><a href="compute_dah_per_patient.html">compute_dah_per_patient()</a></code>
 
         </dt>
-        <dd>Add observation window and flag deaths inside the window</dd>
+        <dd>Compute Days‑At‑Home for each patient (early exit for deaths)</dd>
 
         <dt>
 
-          <code><a href="compute_dah.html">compute_dah()</a></code>
+          <code><a href="merge_intervals.html">merge_intervals()</a></code>
 
         </dt>
-        <dd>Compute Days‑At‑Home per patient</dd>
-
-        <dt>
-
-          <code><a href="count_institutional_days.html">count_institutional_days()</a></code>
-
-        </dt>
-        <dd>Count institutional days that fall inside the (full) observation window</dd>
-
-        <dt>
-
-          <code><a href="extract_institutional.html">extract_institutional()</a></code>
-
-        </dt>
-        <dd>Extract hospital / rehabilitation stays (as integer days)</dd>
-
-        <dt>
-
-          <code><a href="extract_primary.html">extract_primary()</a></code>
-
-        </dt>
-        <dd>Extract the primary admission record</dd>
-
-        <dt>
-
-          <code><a href="merge_overlaps.html">merge_overlaps()</a></code>
-
-        </dt>
-        <dd>Merge overlapping or adjacent institutional intervals per patient</dd>
+        <dd>Merge overlapping intervals (all rows with a start_date are used)</dd>
 
         <dt>
 
@@ -98,21 +70,21 @@
           <code><a href="run_dah_pipeline.html">run_dah_pipeline()</a></code>
 
         </dt>
-        <dd>Run the whole DAH pipeline (dates returned as `Date` objects)</dd>
+        <dd>Run the complete DAH pipeline</dd>
 
         <dt>
 
           <code><a href="summarise_cohort.html">summarise_cohort()</a></code>
 
         </dt>
-        <dd>Summarise DAH at the cohort level (adds number of deaths)</dd>
+        <dd>Summarise DAH at the cohort level</dd>
 
         <dt>
 
-          <code><a href="validate_events.html">validate_events()</a></code>
+          <code><a href="validate_and_prepare.html">validate_and_prepare()</a></code>
 
         </dt>
-        <dd>Validate the long‑format event data</dd>
+        <dd>Validate input and coerce date columns</dd>
       </dl></div>
   </main></div>
 

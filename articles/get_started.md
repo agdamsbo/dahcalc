@@ -99,18 +99,15 @@ res <- run_dah_pipeline(
   data_long             = my_dt,
   window_days           = 30,        # 30‑day observation window
   patient_id_col        = "pid",
-  event_id_col          = "eid",
-  event_type_col        = "etype",
   start_date_col        = "adm_start",
   end_date_col          = "adm_end",
   intervention_date_col = "int_date",
   death_date_col        = "dod",
-  verbose               = TRUE,      # prints a short validation summary
-  keep_original_names   = TRUE        # keep the user’s column names in the output
+  verbose               = TRUE
 )
 
 names(res)
-#> [1] "per_patient"    "cohort_summary" "plot"           "column_mapping"
+#> [1] "per_patient"    "cohort_summary" "plot"
 ```
 
 - `res$per_patient` – one row per patient with DAH values.  
@@ -125,9 +122,9 @@ names(res)
 
 print(res$cohort_summary)
 #>     window_days n_patients n_deaths mean_dah median_dah sd_dah q25_dah q75_dah
-#> 25%          30         40        0    18.35       17.5   6.62   12.75   23.25
+#> 25%          30         40       12     9.68         10   8.72       0      18
 #>     pct_full_home mean_effective_window_days dah_per_100_pt_days
-#> 25%           7.5                         30               61.17
+#> 25%             0                         30               32.25
 ```
 
 Typical output shows:
@@ -144,17 +141,28 @@ Typical output shows:
 ``` r
 
 head(res$per_patient, 10)
-#>    pid   int_date  dod died_in_window institutional_days dah effective_window
-#> 1    1 2023-08-13 <NA>          FALSE                 20  10               30
-#> 2    2 2023-05-05 <NA>          FALSE                 16  14               30
-#> 3    3 2023-10-21 <NA>          FALSE                  9  21               30
-#> 4    4 2023-02-18 <NA>          FALSE                 10  20               30
-#> 5    5 2023-04-21 <NA>          FALSE                  5  25               30
-#> 6    6 2023-12-22 <NA>          FALSE                 22   8               30
-#> 7    7 2023-04-21 <NA>          FALSE                 14  16               30
-#> 8    8 2023-06-13 <NA>          FALSE                 19  11               30
-#> 9    9 2023-06-29 <NA>          FALSE                 14  16               30
-#> 10  10 2023-10-16 <NA>          FALSE                 13  17               30
+#>    patient_id index_date death_date dah institutional_days effective_window
+#> 1           1 2023-08-13       <NA>   5                 25               30
+#> 2           2 2023-05-05 2023-06-10   0                 30               30
+#> 3           3 2023-10-21       <NA>  21                  9               30
+#> 4           4 2023-02-18       <NA>  17                 13               30
+#> 5           5 2023-04-21 2023-05-03   0                  9               30
+#> 6           6 2023-12-22 2024-01-25   0                 34               30
+#> 7           7 2023-04-21 2023-05-14   0                 16               30
+#> 8           8 2023-06-13       <NA>  13                 17               30
+#> 9           9 2023-06-29       <NA>  10                 20               30
+#> 10         10 2023-10-16       <NA>  10                 20               30
+#>    died_in_window
+#> 1           FALSE
+#> 2           FALSE
+#> 3           FALSE
+#> 4           FALSE
+#> 5            TRUE
+#> 6           FALSE
+#> 7            TRUE
+#> 8           FALSE
+#> 9           FALSE
+#> 10          FALSE
 ```
 
 Key columns you’ll see:
@@ -197,8 +205,6 @@ my_real_data <- read.csv("my_clinical_file.csv")
 result <- run_dah_pipeline(
   dt_long               = my_real_data,
   patient_id_col        = "my_id",
-  event_id_col          = "my_event_id",
-  event_type_col        = "my_type",
   start_date_col        = "my_start",
   end_date_col          = "my_end",
   intervention_date_col = "my_intervention",

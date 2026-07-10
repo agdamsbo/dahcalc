@@ -6,17 +6,13 @@
 <url><loc>https://agdamsbo.github.io/dahcalc/articles/index.html</loc></url>
 <url><loc>https://agdamsbo.github.io/dahcalc/authors.html</loc></url>
 <url><loc>https://agdamsbo.github.io/dahcalc/index.html</loc></url>
-<url><loc>https://agdamsbo.github.io/dahcalc/reference/apply_window_and_death.html</loc></url>
-<url><loc>https://agdamsbo.github.io/dahcalc/reference/compute_dah.html</loc></url>
-<url><loc>https://agdamsbo.github.io/dahcalc/reference/count_institutional_days.html</loc></url>
-<url><loc>https://agdamsbo.github.io/dahcalc/reference/extract_institutional.html</loc></url>
-<url><loc>https://agdamsbo.github.io/dahcalc/reference/extract_primary.html</loc></url>
+<url><loc>https://agdamsbo.github.io/dahcalc/reference/compute_dah_per_patient.html</loc></url>
 <url><loc>https://agdamsbo.github.io/dahcalc/reference/index.html</loc></url>
-<url><loc>https://agdamsbo.github.io/dahcalc/reference/merge_overlaps.html</loc></url>
+<url><loc>https://agdamsbo.github.io/dahcalc/reference/merge_intervals.html</loc></url>
 <url><loc>https://agdamsbo.github.io/dahcalc/reference/plot_dah_distribution.html</loc></url>
 <url><loc>https://agdamsbo.github.io/dahcalc/reference/run_dah_pipeline.html</loc></url>
 <url><loc>https://agdamsbo.github.io/dahcalc/reference/summarise_cohort.html</loc></url>
 <url><loc>https://agdamsbo.github.io/dahcalc/reference/synthetic_data.html</loc></url>
-<url><loc>https://agdamsbo.github.io/dahcalc/reference/validate_events.html</loc></url>
+<url><loc>https://agdamsbo.github.io/dahcalc/reference/validate_and_prepare.html</loc></url>
 </urlset>
 
