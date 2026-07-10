@@ -101,14 +101,11 @@ res <- run_dah_pipeline(
   data_long             = my_dt,
   window_days           = 30,        # 30‑day observation window
   patient_id_col        = "pid",
-  event_id_col          = "eid",
-  event_type_col        = "etype",
   start_date_col        = "adm_start",
   end_date_col          = "adm_end",
   intervention_date_col = "int_date",
   death_date_col        = "dod",
-  verbose               = TRUE,      # prints a short validation summary
-  keep_original_names   = TRUE        # keep the user’s column names in the output
+  verbose               = TRUE
 )
 
 names(res)
@@ -177,8 +174,6 @@ my_real_data <- read.csv("my_clinical_file.csv")
 result <- run_dah_pipeline(
   dt_long               = my_real_data,
   patient_id_col        = "my_id",
-  event_id_col          = "my_event_id",
-  event_type_col        = "my_type",
   start_date_col        = "my_start",
   end_date_col          = "my_end",
   intervention_date_col = "my_intervention",

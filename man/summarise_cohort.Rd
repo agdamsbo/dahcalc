@@ -2,18 +2,22 @@
 % Please edit documentation in R/pipeline.R
 \name{summarise_cohort}
 \alias{summarise_cohort}
-\title{Summarise DAH at the cohort level (adds number of deaths)}
+\title{Summarise DAH at the cohort level}
 \usage{
-summarise_cohort(data, window_days = 30L)
+summarise_cohort(per_pat, window_days = 30L)
 }
 \arguments{
-\item{data}{Per‑patient result returned by `compute_dah()`.}
+\item{per_pat}{Data.frame returned by `compute_dah_per_patient()`.}
 
-\item{window_days}{Observation window length (default = 30).}
+\item{window_days}{Length of the observation window (default = 30).}
 }
 \value{
-One‑row data.frame with summary statistics, including `n_deaths`.
+A one‑row data.frame with summary statistics:
+  `window_days`, `n_patients`, `n_deaths`, mean/median/SD,
+  inter‑quartile range, proportion with full home days,
+  mean effective window, and DAH per 100 patient‑days.
 }
 \description{
-Summarise DAH at the cohort level (adds number of deaths)
+Provides descriptive statistics for a cohort, including the number of
+deaths that occurred inside the observation window.
 }

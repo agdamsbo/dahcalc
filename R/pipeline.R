@@ -1,166 +1,100 @@
+# =============================================================================
+#   dahR – simplified, universal Days‑At‑Home pipeline (final version)
+#   Author: <your name>
+#   License: GPL‑3
+# =============================================================================
+
 # -------------------------------------------------------------------------
-# Helper: coerce a vector to Date (accepts Date, POSIXct, character)
+# Helper: coerce any object to Date (handles Date, POSIXct, character)
 # -------------------------------------------------------------------------
 .coerce_to_date <- function(x) {
-  if (inherits(x, "Date")) return(x)
-  if (inherits(x, "POSIXt")) return(as.Date(x))
-  # try character → Date (default ISO format; users can set options)
-  as.Date(x)
+  if (inherits(x, "Date"))      return(x)
+  if (inherits(x, "POSIXt"))    return(as.Date(x))
+  as.Date(x)                    # try character → Date
 }
 
-# Helper: convert integer day count (days since 1970‑01‑01) back to Date
-.int_to_date <- function(x) {
-  as.Date(x, origin = "1970-01-01")
-}
+# Helper: integer (days since 1970‑01‑01) → Date
+.int_to_date <- function(x) as.Date(x, origin = "1970-01-01")
 
 
-# ---------------------------------------------------------------
-#  1. validate_events()
-# ---------------------------------------------------------------
-#' Validate the long‑format event data
+# -------------------------------------------------------------------------
+#' Validate input and coerce date columns
 #'
-#' Checks required columns, coerces all date columns to `Date`, validates a
-#' single primary event per patient and that start ≤ end.  Overlap detection
-#' is performed internally (required for merging) but **no overlap flag is
-#' returned**.
+#' Ensures required columns exist, adds optional columns if missing,
+#' coerces all date columns to `Date`, and checks that `start_date`
+#' never exceeds `end_date`.
 #'
-#' @param data `data.frame` (or coercible) containing the event records.
-#' @param patient_id_col column name for patient ID (default `"patient_id"`).
-#' @param event_id_col column name for event ID (default `"event_id"`).
-#' @param event_type_col column name for event type (default `"event_type"`).
-#' @param start_date_col column name for start date (default `"start_date"`).
-#' @param end_date_col column name for end date (default `"end_date"`).
-#' @param intervention_date_col column name for the primary intervention date
-#'   (default `"intervention_date"`).
-#' @param death_date_col column name for death date (default `"death_date"`).
-#' @return A **cleaned data.frame** whose date columns are `Date` objects.
+#' @param data A `data.frame` (or object coercible to one) containing the raw records.
+#' @param patient_id_col Column name for patient identifier (default `"patient_id"`).
+#' @param start_date_col Column name for start date (default `"start_date"`).
+#' @param end_date_col Column name for end date (default `"end_date"`).
+#' @param intervention_date_col Column name for the index/intervention date
+#'   (default `"intervention_date"`).  If the column is absent it will be created
+#'   and filled with `NA`.
+#' @param death_date_col Column name for death date (default `"death_date"`).
+#'   If the column is absent it will be created and filled with `NA`.
+#'
+#' @return A cleaned `data.frame` where all date columns are genuine `Date`
+#'   objects and `start_date <= end_date` holds for every row.
 #' @export
-validate_events <- function(data,
-                            patient_id_col      = "patient_id",
-                            event_id_col        = "event_id",
-                            event_type_col      = "event_type",
-                            start_date_col      = "start_date",
-                            end_date_col        = "end_date",
-                            intervention_date_col = "intervention_date",
-                            death_date_col      = "death_date") {
+validate_and_prepare <- function(data,
+                                 patient_id_col      = "patient_id",
+                                 start_date_col      = "start_date",
+                                 end_date_col        = "end_date",
+                                 intervention_date_col = "intervention_date",
+                                 death_date_col      = "death_date") {
 
   data <- as.data.frame(data, stringsAsFactors = FALSE)
 
   ## ----- required columns -------------------------------------------------
-  req <- c(patient_id_col, event_id_col, event_type_col,
-           start_date_col, end_date_col,
-           intervention_date_col, death_date_col)
+  req <- c(patient_id_col, start_date_col, end_date_col)
   miss <- setdiff(req, names(data))
   if (length(miss))
     stop("Missing required columns: ", paste(miss, collapse = ", "))
 
-  ## ----- coerce all date columns to Date ----------------------------------
-  date_cols <- c(start_date_col, end_date_col,
-                 intervention_date_col, death_date_col)
-  for (c in date_cols) {
+  ## ----- optional columns -------------------------------------------------
+  if (!intervention_date_col %in% names(data))
+    data[[intervention_date_col]] <- NA
+  if (!death_date_col %in% names(data))
+    data[[death_date_col]] <- NA
+
+  ## ----- coerce to Date --------------------------------------------------
+  for (c in c(start_date_col, end_date_col,
+              intervention_date_col, death_date_col)) {
     data[[c]] <- .coerce_to_date(data[[c]])
-    if (!inherits(data[[c]], "Date"))
-      stop("Column ", c, " could not be coerced to Date")
   }
 
-  ## ----- exactly ONE primary per patient ---------------------------------
-  prim_rows <- data[data[[event_type_col]] == "primary", ]
-  if (nrow(prim_rows) == 0)
-    stop("No primary event found")
-  prim_cnt <- table(prim_rows[[patient_id_col]])
-  if (any(prim_cnt != 1))
-    stop("Each patient must have exactly ONE primary event")
-
-  ## ----- start ≤ end ------------------------------------------------------
-  bad_idx <- with(data,
-                  !is.na(data[[start_date_col]]) &
-                    !is.na(data[[end_date_col]]) &
-                    data[[start_date_col]] > data[[end_date_col]])
-  if (any(bad_idx))
+  ## ----- sanity check: start ≤ end ---------------------------------------
+  bad <- !is.na(data[[start_date_col]]) &
+    !is.na(data[[end_date_col]]) &
+    data[[start_date_col]] > data[[end_date_col]]
+  if (any(bad))
     stop("Rows found with start_date > end_date")
 
-  ## ----- overlapping institutional stays (still checked internally) ------
-  ##    We keep the check but discard the result.
-  inst <- data[data[[event_type_col]] %in% c("hospital", "rehabilitation"), ]
-  inst <- inst[order(inst[[patient_id_col]], inst[[start_date_col]]), ]
-
-  has_overlap <- function(df) {
-    if (is.null(df) || nrow(df) < 2) return(FALSE)
-    s <- as.integer(df[[start_date_col]])
-    e <- as.integer(df[[end_date_col]])
-    any(s[-1] <= e[-length(e)])
-  }
-  invisible(sapply(split(inst, inst[[patient_id_col]]), has_overlap))
-
-  ## Return the cleaned data
   data
 }
 
-
-# ---------------------------------------------------------------
-#  2. extract_primary()
-# ---------------------------------------------------------------
-#' Extract the primary admission record
-#' @param data Output of `validate_events()` (canonical column names).
-#' @param patient_id_col column name for patient ID (default `"patient_id"`).
-#' @param event_type_col column name for event type (default `"event_type"`).
-#' @param intervention_date_col column name for the primary intervention date
-#'   (default `"intervention_date"`).
-#' @param death_date_col column name for death date (default `"death_date"`).
-#' @return Data.frame with `patient_id`, `intervention_date`, `death_date`.
+# -------------------------------------------------------------------------
+#' Merge overlapping intervals (all rows with a start_date are used)
+#'
+#' Intervals are merged **only when they truly overlap**
+#' (`new_start <= current_end`).  Touching intervals (e.g. one ends on
+#' day 5 and the next starts on day 6) are left separate.
+#'
+#' @param df A `data.frame` that must contain the columns `patient_id`,
+#'   `start_date`, `end_date`.  `end_date` may be `NA` (open‑ended interval).
+#' @return A `data.frame` with columns `patient_id`, `start`, `end`
+#'   (both integer days since 1970‑01‑01).  One row per merged interval.
 #' @export
-extract_primary <- function(data,
+merge_intervals <- function(df,
                             patient_id_col      = "patient_id",
-                            event_type_col      = "event_type",
-                            intervention_date_col = "intervention_date",
-                            death_date_col      = "death_date") {
+                            start_date_col      = "start_date",
+                            end_date_col        = "end_date") {
 
-  prim <- data[data[[event_type_col]] == "primary", ]
-  data.frame(
-    patient_id        = prim[[patient_id_col]],
-    intervention_date = prim[[intervention_date_col]],
-    death_date        = prim[[death_date_col]],
-    stringsAsFactors = FALSE
-  )
-}
+  ## ---- keep only rows that actually have a start date -----------------
+  intv <- df[!is.na(df[[start_date_col]]), , drop = FALSE]
 
-
-# ---------------------------------------------------------------
-#  3. extract_institutional()
-# ---------------------------------------------------------------
-#' Extract hospital / rehabilitation stays (as integer days)
-#' @param data Output of `validate_events()`.
-#' @param patient_id_col column name for patient ID.
-#' @param event_type_col column name for event type.
-#' @param start_date_col column name for stay start date.
-#' @param end_date_col column name for stay end date.
-#' @return Data.frame with `patient_id`, `start`, `end` (both integer days).
-#' @export
-extract_institutional <- function(data,
-                                  patient_id_col = "patient_id",
-                                  event_type_col = "event_type",
-                                  start_date_col = "start_date",
-                                  end_date_col   = "end_date") {
-
-  inst <- data[data[[event_type_col]] %in% c("hospital", "rehabilitation"), ]
-  data.frame(
-    patient_id = inst[[patient_id_col]],
-    start      = as.integer(inst[[start_date_col]]),   # integer days since 1970‑01‑01
-    end        = as.integer(inst[[end_date_col]]),
-    stringsAsFactors = FALSE
-  )
-}
-
-
-# ---------------------------------------------------------------
-#  4. merge_overlaps()
-# ---------------------------------------------------------------
-#' Merge overlapping or adjacent institutional intervals per patient
-#' @param inst_data Data.frame with `patient_id`, `start`, `end` (integer days).
-#' @return Data.frame with merged intervals (still integer days).
-#' @export
-merge_overlaps <- function(inst_data) {
-  if (nrow(inst_data) == 0L) {
+  if (nrow(intv) == 0L) {
     return(data.frame(
       patient_id = integer(),
       start      = integer(),
@@ -168,343 +102,368 @@ merge_overlaps <- function(inst_data) {
       stringsAsFactors = FALSE
     ))
   }
-  inst_data <- inst_data[order(inst_data$patient_id, inst_data$start), ]
 
-  merged_list <- lapply(split(inst_data, inst_data$patient_id), function(df) {
-    cur_start <- df$start[1]
-    cur_end   <- df$end[1]
+  ## ---- convert dates to integer days ----------------------------------
+  intv <- data.frame(
+    patient_id = intv[[patient_id_col]],
+    start      = as.integer(intv[[start_date_col]]),
+    end        = as.integer(intv[[end_date_col]]),   # NA allowed (open‑ended)
+    stringsAsFactors = FALSE
+  )
+
+  ## ---- sort -----------------------------------------------------------
+  intv <- intv[order(intv$patient_id, intv$start), ]
+
+  ## ---- treat missing ends as a far‑future integer for merging ----------
+  intv$end[is.na(intv$end)] <- .Machine$integer.max
+
+  ## ---- merge overlapping intervals only -------------------------------
+  merged_list <- lapply(split(intv, intv$patient_id), function(d) {
+    cur_start <- d$start[1]
+    cur_end   <- d$end[1]
     out_start <- integer()
     out_end   <- integer()
-    if (nrow(df) == 1) {
+
+    if (nrow(d) == 1) {
       out_start <- cur_start
       out_end   <- cur_end
     } else {
-      for (i in 2:nrow(df)) {
-        if (df$start[i] <= cur_end + 1) {
-          cur_end <- max(cur_end, df$end[i])
+      for (i in 2:nrow(d)) {
+        ## overlap only when new start ≤ current end
+        if (d$start[i] <= cur_end) {
+          cur_end <- max(cur_end, d$end[i])
         } else {
           out_start <- c(out_start, cur_start)
           out_end   <- c(out_end,   cur_end)
-          cur_start <- df$start[i]
-          cur_end   <- df$end[i]
+          cur_start <- d$start[i]
+          cur_end   <- d$end[i]
         }
       }
       out_start <- c(out_start, cur_start)
       out_end   <- c(out_end,   cur_end)
     }
+
     data.frame(
-      patient_id = df$patient_id[1],
+      patient_id = d$patient_id[1],
       start      = out_start,
       end        = out_end,
       stringsAsFactors = FALSE
     )
   })
+
   merged <- do.call(rbind, merged_list)
   rownames(merged) <- NULL
   merged
 }
 
-
-# ---------------------------------------------------------------
-#  5. apply_window_and_death()
-# ---------------------------------------------------------------
-#' Add observation window and flag deaths inside the window
-#' @param primary_data Data.frame from `extract_primary()`.
-#' @param window_days Integer length of the observation window (default = 30).
-#' @param intervention_date_col column name for the intervention date.
-#' @param death_date_col column name for death date.
-#' @return `primary_data` with integer `window_start`, `window_end`
-#'   and logical `died_in_window`.  Original Date columns are untouched.
+# -------------------------------------------------------------------------
+#' Compute Days‑At‑Home for each patient (early exit for deaths)
+#'
+#' All rows with a non‑`NA` `start_date` are treated as admission intervals.
+#' Overlapping intervals are merged (see `merge_intervals`).  If a patient
+#' dies inside the observation window the function returns `dah = 0` and
+#' `institutional_days = 0` without performing interval counting.
+#'
+#' @param data_clean Output of `validate_and_prepare()`.
+#' @param window_days Length of the observation window (default = 30 days).
+#' @param patient_id_col Column name for patient identifier (default `"patient_id"`).
+#' @param start_date_col Column name for admission start date (default `"start_date"`).
+#' @param end_date_col Column name for admission end date (default `"end_date"`).
+#' @param intervention_date_col Column name for the index/intervention date
+#'   (default `"intervention_date"`).
+#' @param death_date_col Column name for death date (default `"death_date"`).
+#'
+#' @return A `data.frame` (one row per patient) with columns
+#'   `patient_id`, `index_date` (Date), `death_date` (Date or NA),
+#'   `dah`, `institutional_days`, `effective_window` (always = `window_days`),
+#'   `died_in_window` (logical).
 #' @export
-apply_window_and_death <- function(primary_data,
-                                   window_days = 30L,
-                                   intervention_date_col = "intervention_date",
-                                   death_date_col = "death_date") {
+compute_dah_per_patient <- function(data_clean,
+                                    window_days = 30L,
+                                    patient_id_col      = "patient_id",
+                                    start_date_col      = "start_date",
+                                    end_date_col        = "end_date",
+                                    intervention_date_col = "intervention_date",
+                                    death_date_col      = "death_date") {
 
-  primary_data$window_start <- as.integer(primary_data[[intervention_date_col]])
-  primary_data$window_end   <- primary_data$window_start + window_days - 1L
+  ## ---------------------------------------------------------------
+  ## 1) Determine the index (anchor) date for each patient
+  ## ---------------------------------------------------------------
+  first_start <- aggregate(data_clean[[start_date_col]],
+                           by = list(pid = data_clean[[patient_id_col]]),
+                           FUN = min, na.rm = TRUE)
+  names(first_start)[2] <- "first_start"
 
-  primary_data$died_in_window <-
-    !is.na(primary_data[[death_date_col]]) &
-    as.integer(primary_data[[death_date_col]]) >= primary_data$window_start &
-    as.integer(primary_data[[death_date_col]]) <= primary_data$window_end
+  ## Replace missing intervention dates with the first start date of that patient
+  idx_date <- data_clean[[intervention_date_col]]
+  na_idx  <- is.na(idx_date)
+  if (any(na_idx)) {
+    idx_date[na_idx] <- first_start$first_start[match(
+      data_clean[[patient_id_col]][na_idx], first_start$pid)]
+  }
+  data_clean[[intervention_date_col]] <- idx_date
 
-  primary_data
-}
+  ## ---------------------------------------------------------------
+  ## 2) Observation window per patient
+  ## ---------------------------------------------------------------
+  patient_ids <- unique(data_clean[[patient_id_col]])
 
-
-# ---------------------------------------------------------------
-#  6. count_institutional_days()
-# ---------------------------------------------------------------
-#' Count institutional days that fall inside the (full) observation window
-#' @param inst_data Data.frame with merged intervals (`patient_id`, `start`,
-#'   `end`) – integer days.
-#' @param win_data Data.frame from `apply_window_and_death()` that must
-#'   contain `patient_id`, `window_start`, `window_end` and `died_in_window`.
-#' @return Data.frame with `patient_id` and `institutional_days`.  If a patient
-#'   died inside the window the count is forced to 0.
-#' @export
-count_institutional_days <- function(inst_data, win_data) {
-  result <- data.frame(
-    patient_id        = win_data$patient_id,
-    institutional_days = integer(length(win_data$patient_id)),
+  window_df <- data.frame(
+    patient_id = patient_ids,
+    index_date = as.integer(
+      data_clean[[intervention_date_col]][match(patient_ids,
+                                                data_clean[[patient_id_col]])]
+    ),
     stringsAsFactors = FALSE
   )
+  window_df$window_start <- window_df$index_date
+  window_df$window_end   <- window_df$index_date + window_days - 1L
 
-  intersect_len <- mapply(
-    FUN = function(pid, w_start, w_end) {
-      intv <- inst_data[inst_data$patient_id == pid, , drop = FALSE]
-      if (nrow(intv) == 0) return(0L)
+  ## ---------------------------------------------------------------
+  ## 3) Extract death dates (first non‑NA per patient)
+  ## ---------------------------------------------------------------
+  death_vec_raw <- tapply(data_clean[[death_date_col]],
+                          data_clean[[patient_id_col]],
+                          function(x) {
+                            nd <- x[!is.na(x)]
+                            if (length(nd) == 0) NA else min(nd)
+                          })
+  death_vec <- as.Date(death_vec_raw[as.character(patient_ids)],
+                       origin = "1970-01-01")
 
-      inter <- pmax(0L,
-                    pmin(intv$end, w_end) -
-                      pmax(intv$start, w_start) + 1L)
-      sum(inter)
-    },
-    result$patient_id,
-    win_data$window_start,
-    win_data$window_end,
-    USE.NAMES = FALSE
-  )
+  ## ---------------------------------------------------------------
+  ## 4) Identify patients who die inside the window
+  ## ---------------------------------------------------------------
+  died_in_window <- !is.na(death_vec) &
+    as.integer(death_vec) >= window_df$window_start &
+    as.integer(death_vec) <= window_df$window_end
 
-  ## Patients who died inside the window get 0 institutional days
-  intersect_len[win_data$died_in_window] <- 0L
-  result$institutional_days <- intersect_len
-  result
-}
+  ## Initialise result vectors
+  dah       <- integer(length(patient_ids))
+  inst_days <- integer(length(patient_ids))
 
+  ## ---------------------------------------------------------------
+  ## 5) Early‑exit for patients who die inside the window
+  ## ---------------------------------------------------------------
+  dah[died_in_window]       <- 0L
+  inst_days[died_in_window] <- 0L
 
-# ---------------------------------------------------------------
-#  7. compute_dah()
-# ---------------------------------------------------------------
-#' Compute Days‑At‑Home per patient
-#' @param win_data Output of `apply_window_and_death()`.
-#' @param inst_counts Output of `count_institutional_days()`.
-#' @param window_days Length of the observation window (default = 30).
-#' @return Data.frame with per‑patient results.  All date columns are `Date`.
-#' @export
-compute_dah <- function(win_data,
-                        inst_counts,
-                        window_days = 30L) {
+  ## ---------------------------------------------------------------
+  ## 6) Process only patients who are alive (or die after the window)
+  ## ---------------------------------------------------------------
+  alive_idx <- which(!died_in_window)
+  if (length(alive_idx) > 0) {
 
-  merged <- merge(win_data, inst_counts,
-                  by = "patient_id", all.x = TRUE)
+    ## 6a) Merge overlapping intervals (all rows with a start_date)
+    merged_int <- merge_intervals(data_clean,
+                                  patient_id_col=patient_id_col,
+                                  start_date_col=start_date_col,
+                                  end_date_col=end_date_col)
 
-  merged$institutional_days[is.na(merged$institutional_days)] <- 0L
+    ## 6b) Count institutional days per alive patient
+    merged_int$diff <- merged_int$end-merged_int$start
 
-  merged$dah <- ifelse(merged$died_in_window,
-                       0L,
-                       pmax(0L, window_days - merged$institutional_days))
+    inst_days <- split(merged_int,merged_int$patient_id) |> lapply(\(.x){
+      sum(.x$diff)
+    }) |> unlist()
 
-  merged$effective_window <- window_days   # constant for everybody
-
-  ## ---- Ensure date columns are Date objects --------------------------------
-  ## `intervention_date` is already a Date (it was never coerced to integer).
-  ## `death_date` might have been turned into integer by a previous step,
-  ## so we force it back to Date if necessary.
-  if (!inherits(merged$death_date, "Date")) {
-    merged$death_date <- .int_to_date(merged$death_date)
+    ## 6c) Compute DAH for alive patients
+    dah[alive_idx] <- pmax(0L, window_days - inst_days[alive_idx])
   }
 
-  ## Drop the temporary integer window columns – they are not needed downstream
-  merged$window_start <- merged$window_end <- NULL
-  merged
+  ## ---------------------------------------------------------------
+  ## 7) Assemble final per‑patient table
+  ## ---------------------------------------------------------------
+  out <- data.frame(
+    patient_id        = patient_ids,
+    index_date        = .int_to_date(window_df$index_date),
+    death_date        = death_vec,
+    dah               = dah,
+    institutional_days = inst_days,
+    effective_window   = window_days,
+    died_in_window     = died_in_window,
+    stringsAsFactors = FALSE
+  )
+  out
 }
 
-
-
-# ---------------------------------------------------------------
-#  8. summarise_cohort()
-# ---------------------------------------------------------------
-#' Summarise DAH at the cohort level (adds number of deaths)
-#' @param data Per‑patient result returned by `compute_dah()`.
-#' @param window_days Observation window length (default = 30).
-#' @return One‑row data.frame with summary statistics, including `n_deaths`.
+# -------------------------------------------------------------------------
+#' Summarise DAH at the cohort level
+#'
+#' Provides descriptive statistics for a cohort, including the number of
+#' deaths that occurred inside the observation window.
+#'
+#' @param per_pat Data.frame returned by `compute_dah_per_patient()`.
+#' @param window_days Length of the observation window (default = 30).
+#'
+#' @return A one‑row data.frame with summary statistics:
+#'   `window_days`, `n_patients`, `n_deaths`, mean/median/SD,
+#'   inter‑quartile range, proportion with full home days,
+#'   mean effective window, and DAH per 100 patient‑days.
 #' @importFrom stats median quantile sd
 #' @export
-summarise_cohort <- function(data, window_days = 30L) {
-  n_deaths <- sum(data$died_in_window, na.rm = TRUE)
+summarise_cohort <- function(per_pat, window_days = 30L) {
+  n_deaths <- sum(!is.na(per_pat$death_date) &
+                    per_pat$dah == 0, na.rm = TRUE)
 
-  total_pt_days <- sum(data$effective_window)
-  total_dah     <- sum(data$dah)
+  total_pt_days <- sum(per_pat$effective_window)
+  total_dah     <- sum(per_pat$dah)
 
   data.frame(
     window_days                = window_days,
-    n_patients                 = nrow(data),
+    n_patients                 = nrow(per_pat),
     n_deaths                   = n_deaths,
-    mean_dah                   = round(mean(data$dah), 2),
-    median_dah                 = median(data$dah),
-    sd_dah                     = round(sd(data$dah), 2),
-    q25_dah                    = quantile(data$dah, 0.25),
-    q75_dah                    = quantile(data$dah, 0.75),
-    pct_full_home              = round(100 * mean(data$dah == window_days), 1),
-    mean_effective_window_days = round(mean(data$effective_window), 2),
+    mean_dah                   = round(mean(per_pat$dah), 2),
+    median_dah                 = median(per_pat$dah),
+    sd_dah                     = round(sd(per_pat$dah), 2),
+    q25_dah                    = quantile(per_pat$dah, 0.25),
+    q75_dah                    = quantile(per_pat$dah, 0.75),
+    pct_full_home              = round(100 * mean(per_pat$dah == window_days), 1),
+    mean_effective_window_days = round(mean(per_pat$effective_window), 2),
     dah_per_100_pt_days        = round(100 * total_dah / total_pt_days, 2),
     stringsAsFactors = FALSE
   )
 }
 
-
-# ---------------------------------------------------------------
-#  9. plot_dah_distribution()
-# ---------------------------------------------------------------
+# -------------------------------------------------------------------------
 #' Plot the distribution of Days‑At‑Home
-#' @param data Per‑patient result from `compute_dah()`.
+#'
+#' A histogram where bars are coloured by death‑in‑window status, with a
+#' vertical line for the window length and another for the median DAH.
+#' The y‑axis shows only whole numbers.
+#'
+#' @param per_pat Data.frame produced by `compute_dah_per_patient()`.
 #' @param window_days Observation window length (default = 30).
-#' @return A ggplot2 object (single‑colour histogram).
+#' @return A **ggplot2** object.
 #' @import ggplot2
 #' @export
-plot_dah_distribution <- function(data, window_days = 30L) {
-  ggplot(data,
-         aes(x = dah)) +
+plot_dah_distribution <- function(per_pat, window_days = 30L) {
+
+  ## annotation string ---------------------------------------------------
+  n_pat   <- nrow(per_pat)
+  n_dead  <- sum(per_pat$died_in_window, na.rm = TRUE)
+  pct_dead <- round(100 * n_dead / n_pat, 1)
+
+  mean_dah   <- round(mean(per_pat$dah), 2)
+  median_dah <- median(per_pat$dah)
+
+  annotation_txt <- sprintf(
+    "n = %d patients\nDeaths = %d (%.1f%%)\nMean DAH = %0.1f\nMedian DAH = %0.1f",
+    n_pat, n_dead, pct_dead, mean_dah, median_dah
+  )
+
+  ggplot(per_pat, aes(x = dah, fill = died_in_window)) +
     geom_histogram(binwidth = 1,
                    colour = "black",
-                   fill = "#4C72B0",
                    boundary = -0.5) +
-    geom_vline(xintercept = window_days,
-               linetype = "dashed") +
-    labs(
-      title = paste0("Distribution of Days At Home (",
-                     window_days,
-                     "-day window)"),
-      x = "Days At Home",
-      y = "Number of patients"
+    scale_fill_manual(
+      values = c("FALSE" = "#4C72B0", "TRUE" = "#C44E52"),
+      name   = "Died inside window"
     ) +
-    theme_minimal()
+    ## window length line ------------------------------------------------
+  geom_vline(xintercept = window_days,
+             linetype = "dashed", colour = "darkgray") +
+    ## median DAH line ----------------------------------------------------
+  geom_vline(xintercept = median_dah,
+             linetype = "solid", colour = "steelblue") +
+    ## y‑axis: whole numbers only ----------------------------------------
+  scale_y_continuous(
+    breaks = function(lims) {
+      max_cnt <- ceiling(lims[2])
+      seq(0, max_cnt, by = 1)
+    },
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+    labs(
+      title    = paste0("Distribution of Days At Home (",
+                        window_days,
+                        "-day window)"),
+      subtitle = "Bars coloured by death‑in‑window status; median DAH shown",
+      x        = "Days At Home",
+      y        = "Number of patients"
+    ) +
+    annotate(
+      "text", x = Inf, y = Inf,
+      label = annotation_txt,
+      hjust = 1.1, vjust = 1.1,
+      size  = 3.5,
+      colour = "black",
+      fontface = "plain",
+      family = "sans"
+    ) +
+    theme_minimal() +
+    theme(legend.position = "top",
+          plot.subtitle   = element_text(face = "italic"))
 }
 
-
-# ---------------------------------------------------------------
-# 10. run_dah_pipeline()
-# ---------------------------------------------------------------
-#' Run the whole DAH pipeline (dates returned as `Date` objects)
+# -------------------------------------------------------------------------
+#' Run the complete DAH pipeline
+#'
+#' Accepts any long‑format data that contains at least `patient_id`,
+#' `start_date`, and `end_date`.  Optional columns are `intervention_date`
+#' (the anchor for the observation window) and `death_date`.  No event‑type
+#' handling is performed; every row with a non‑`NA` `start_date` is treated
+#' as an admission interval.
+#'
 #' @param data_long Raw long‑format data (`data.frame` or `data.table`).
-#' @param window_days Observation window length (default = 30).
-#' @param patient_id_col column name for patient ID (default `"patient_id"`).
-#' @param event_id_col column name for event ID (default `"event_id"`).
-#' @param event_type_col column name for event type (default `"event_type"`).
-#' @param start_date_col column name for start date (default `"start_date"`).
-#' @param end_date_col column name for end date (default `"end_date"`).
-#' @param intervention_date_col column name for the primary intervention date
+#' @param window_days Length of the observation window (default = 30 days).
+#' @param patient_id_col Column name for patient identifier (default `"patient_id"`).
+#' @param start_date_col Column name for admission start date (default `"start_date"`).
+#' @param end_date_col Column name for admission end date (default `"end_date"`).
+#' @param intervention_date_col Column name for the index/intervention date
 #'   (default `"intervention_date"`).
-#' @param death_date_col column name for death date (default `"death_date"`).
-#' @param verbose Logical; retained for backward compatibility but has no
-#'   effect (default = \code{TRUE}).
-#' @param keep_original_names If \code{TRUE}, the output keeps the user‑supplied
-#'   column names (default = \code{FALSE}).
-#' @return List with `per_patient`, `cohort_summary`, `plot`,
-#'   and `column_mapping`.  All date columns in `per_patient` are `Date` objects.
+#' @param death_date_col Column name for death date (default `"death_date"`).
+#' @param verbose Logical; retained for compatibility (no console output).
+#'
+#' @return A list with three components:\n
+#'   `per_patient` – per‑patient DAH table (date columns are `Date`),\n
+#'   `cohort_summary` – cohort‑level statistics,\n
+#'   `plot` – histogram of DAH values.
 #' @export
 run_dah_pipeline <- function(
     data_long,
     window_days = 30L,
 
-    # ----- column‑name arguments (canonical defaults) -----
     patient_id_col      = "patient_id",
-    event_id_col        = "event_id",
-    event_type_col      = "event_type",
     start_date_col      = "start_date",
     end_date_col        = "end_date",
     intervention_date_col = "intervention_date",
     death_date_col      = "death_date",
 
-    # ----- extras -----------------------------------------
-    verbose            = TRUE,
-    keep_original_names = FALSE
+    verbose            = TRUE   # kept for compatibility; no output
 ) {
 
-  ## 1) coerce ------------------------------------------------------------
-  data <- as.data.frame(data_long, stringsAsFactors = FALSE)
-
-  ## 2) rename to canonical names -----------------------------------------
-  rename_map <- c(
-    patient_id        = patient_id_col,
-    event_id          = event_id_col,
-    event_type        = event_type_col,
-    start_date        = start_date_col,
-    end_date          = end_date_col,
-    intervention_date = intervention_date_col,
-    death_date        = death_date_col
-  )
-  missing <- rename_map[!rename_map %in% names(data)]
-  if (length(missing))
-    stop("Missing columns in data: ", paste(missing, collapse = ", "))
-  names(data)[match(rename_map, names(data))] <- names(rename_map)
-
-  ## 3) core processing ----------------------------------------------------
-  clean_data <- validate_events(
-    data,
-    patient_id_col      = "patient_id",
-    event_id_col        = "event_id",
-    event_type_col      = "event_type",
-    start_date_col      = "start_date",
-    end_date_col        = "end_date",
-    intervention_date_col = "intervention_date",
-    death_date_col      = "death_date"
+  ## 1) Validate and coerce -------------------------------------------------
+  clean_data <- validate_and_prepare(
+    data_long,
+    patient_id_col      = patient_id_col,
+    start_date_col      = start_date_col,
+    end_date_col        = end_date_col,
+    intervention_date_col = intervention_date_col,
+    death_date_col      = death_date_col
   )
 
-  ## primary admission -------------------------------------------------------
-  primary_data <- extract_primary(
+  ## 2) Compute per‑patient DAH --------------------------------------------
+  per_pat <- compute_dah_per_patient(
     clean_data,
-    patient_id_col      = "patient_id",
-    event_type_col      = "event_type",
-    intervention_date_col = "intervention_date",
-    death_date_col      = "death_date"
-  )
-  ## Merge a separate “death” row if present
-  death_info <- clean_data[clean_data[[event_type_col]] == "death",
-                           c("patient_id", "death_date")]
-  if (nrow(death_info) > 0) {
-    primary_data <- merge(primary_data, death_info,
-                          by = "patient_id", all.x = TRUE)
-    primary_data$death_date <- ifelse(is.na(primary_data$death_date.x),
-                                      primary_data$death_date.y,
-                                      primary_data$death_date.x)
-    primary_data$death_date.x <- primary_data$death_date.y <- NULL
-  }
-
-  ## institutional stays ----------------------------------------------------
-  inst_data_raw  <- extract_institutional(
-    clean_data,
-    patient_id_col = "patient_id",
-    event_type_col = "event_type",
-    start_date_col = "start_date",
-    end_date_col   = "end_date"
-  )
-  inst_data_nonover <- merge_overlaps(inst_data_raw)
-
-  ## observation window -----------------------------------------------------
-  win_data <- apply_window_and_death(
-    primary_data,
-    window_days,
-    intervention_date_col = "intervention_date",
-    death_date_col      = "death_date"
+    window_days = window_days,
+    patient_id_col      = patient_id_col,
+    start_date_col      = start_date_col,
+    end_date_col        = end_date_col,
+    intervention_date_col = intervention_date_col,
+    death_date_col      = death_date_col
   )
 
-  ## count institutional days ------------------------------------------------
-  inst_counts <- count_institutional_days(inst_data_nonover, win_data)
-
-  ## per‑patient DAH --------------------------------------------------------
-  per_pat <- compute_dah(win_data, inst_counts, window_days)
-
-  ## cohort summary ---------------------------------------------------------
+  ## 3) Cohort summary ------------------------------------------------------
   cohort_sum <- summarise_cohort(per_pat, window_days)
 
-  ## diagnostic plot --------------------------------------------------------
+  ## 4) Plot ---------------------------------------------------------------
   dah_plot <- plot_dah_distribution(per_pat, window_days)
 
-  ## 4) optional rename back to the user’s column names -----------------------
-  if (keep_original_names) {
-    present_canonical <- intersect(names(per_pat), names(rename_map))
-    back_names <- rename_map[present_canonical]
-    names(per_pat)[match(present_canonical, names(per_pat))] <- back_names
-  }
-
-  ## 5) return ---------------------------------------------------------------
+  ## 5) Return ---------------------------------------------------------------
   list(
-    per_patient    = per_pat,      # all date columns are Date objects
+    per_patient    = per_pat,
     cohort_summary = cohort_sum,
-    plot           = dah_plot,
-    column_mapping = rename_map
+    plot           = dah_plot
   )
 }

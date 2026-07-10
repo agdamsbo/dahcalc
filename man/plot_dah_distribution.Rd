@@ -4,16 +4,18 @@
 \alias{plot_dah_distribution}
 \title{Plot the distribution of Days‑At‑Home}
 \usage{
-plot_dah_distribution(data, window_days = 30L)
+plot_dah_distribution(per_pat, window_days = 30L)
 }
 \arguments{
-\item{data}{Per‑patient result from `compute_dah()`.}
+\item{per_pat}{Data.frame produced by `compute_dah_per_patient()`.}
 
 \item{window_days}{Observation window length (default = 30).}
 }
 \value{
-A ggplot2 object (single‑colour histogram).
+A **ggplot2** object.
 }
 \description{
-Plot the distribution of Days‑At‑Home
+A histogram where bars are coloured by death‑in‑window status, with a
+vertical line for the window length and another for the median DAH.
+The y‑axis shows only whole numbers.
 }
