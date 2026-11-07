@@ -378,7 +378,7 @@ plot_dah_distribution <- function(per_pat, window_days = 30L) {
       title    = paste0("Distribution of Days At Home (",
                         window_days,
                         "-day window)"),
-      subtitle = "Bars coloured by death‑in‑window status; median DAH shown",
+      subtitle = "Bars coloured by death-in-window status; median DAH shown",
       x        = "Days At Home",
       y        = "Number of patients"
     ) +
