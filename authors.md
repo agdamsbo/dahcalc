@@ -10,7 +10,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/agdamsbo/dahcalc/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/agdamsbo/dahcalc/blob/v2026.11.1/DESCRIPTION)
 
 Damsbo A, Ørskov K (2026). *dahcalc: Calculate Days-at-Home*. R package
 version 2026.7.1, <https://github.com/agdamsbo/dahcalc>.
