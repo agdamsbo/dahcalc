@@ -15,7 +15,7 @@ which columns correspond to the required concepts.
 
 ------------------------------------------------------------------------
 
-## 1️⃣ Get the package and load the example data set
+## Get the package and load the example data set
 
 ``` r
 
@@ -52,7 +52,7 @@ expects:
 
 ------------------------------------------------------------------------
 
-## 2️⃣ (Optional) Rename columns to match your own file
+## (Optional) Rename columns to match your own file
 
 If your own CSV uses different names you can rename them before calling
 the pipeline. For demonstration we rename them to a lower‑case scheme,
@@ -88,7 +88,7 @@ Now `my_dt` looks like the data a user might supply.
 
 ------------------------------------------------------------------------
 
-## 3️⃣ Run the DAH pipeline
+## Run the DAH pipeline
 
 Tell the wrapper the names you are using (or skip the arguments if you
 kept the canonical names).
@@ -116,7 +116,7 @@ names(res)
 
 ------------------------------------------------------------------------
 
-## 4️⃣ Look at the cohort‑level summary
+## Look at the cohort‑level summary
 
 ``` r
 
@@ -131,12 +131,12 @@ Typical output shows:
 
 - number of patients,
 - mean / median / SD of DAH,
-- percentage with **full** 30 days at home,
-- DAH per 100 person‑days, etc.
+- percentage with **full** 30 days at home,
+- DAH per 100 person‑days, etc.
 
 ------------------------------------------------------------------------
 
-## 5️⃣ Inspect the per‑patient table
+## Inspect the per‑patient table
 
 ``` r
 
@@ -170,14 +170,14 @@ Key columns you’ll see:
 | column | meaning |
 |----|----|
 | `pid` (or `patient_id`) | patient identifier |
-| `dah` | days at home within the window (0 if death occurs inside) |
+| `dah` | days at home within the window (0 if death occurs inside) |
 | `effective_window` | length of the observation window actually used (shorter when death occurs) |
 | `institutional_days` | number of days spent in hospital/rehab |
 | `died_in_window` | `TRUE` if death happened inside the window |
 
 ------------------------------------------------------------------------
 
-## 6️⃣ Visualise the DAH distribution
+## Visualise the DAH distribution
 
 ``` r
 
@@ -191,7 +191,7 @@ at home, how many had long institutional stays, and where deaths fall.
 
 ------------------------------------------------------------------------
 
-## 7️⃣ What to do with your own data
+## What to do with your own data
 
 When you have a real CSV file, the workflow is the same:
 
