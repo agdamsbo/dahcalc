@@ -1,12 +1,5 @@
-# =============================================================================
-#   dahR – simplified, universal Days‑At‑Home pipeline (final version)
-#   Author: <your name>
-#   License: GPL‑3
-# =============================================================================
 
-# -------------------------------------------------------------------------
 # Helper: coerce any object to Date (handles Date, POSIXct, character)
-# -------------------------------------------------------------------------
 .coerce_to_date <- function(x) {
   if (inherits(x, "Date"))      return(x)
   if (inherits(x, "POSIXt"))    return(as.Date(x))
@@ -17,9 +10,9 @@
 .int_to_date <- function(x) as.Date(x, origin = "1970-01-01")
 
 
-# -------------------------------------------------------------------------
 #' Validate input and coerce date columns
 #'
+#' @description
 #' Ensures required columns exist, adds optional columns if missing,
 #' coerces all date columns to `Date`, and checks that `start_date`
 #' never exceeds `end_date`.
@@ -33,7 +26,6 @@
 #'   and filled with `NA`.
 #' @param death_date_col Column name for death date (default `"death_date"`).
 #'   If the column is absent it will be created and filled with `NA`.
-#'
 #' @return A cleaned `data.frame` where all date columns are genuine `Date`
 #'   objects and `start_date <= end_date` holds for every row.
 #' @export
@@ -74,15 +66,19 @@ validate_and_prepare <- function(data,
   data
 }
 
-# -------------------------------------------------------------------------
+
 #' Merge overlapping intervals (all rows with a start_date are used)
 #'
+#' @description
 #' Intervals are merged **only when they truly overlap**
 #' (`new_start <= current_end`).  Touching intervals (e.g. one ends on
-#' day 5 and the next starts on day 6) are left separate.
+#' day 5 and the next starts on day 6) are left separate.
 #'
 #' @param df A `data.frame` that must contain the columns `patient_id`,
 #'   `start_date`, `end_date`.  `end_date` may be `NA` (open‑ended interval).
+#' @param patient_id_col Patient ID column name. Default is "patient_id".
+#' @param start_date_col Start date column name. Default is "start_date".
+#' @param end_date_col End date column name. Default is "end_date".
 #' @return A `data.frame` with columns `patient_id`, `start`, `end`
 #'   (both integer days since 1970‑01‑01).  One row per merged interval.
 #' @export
@@ -156,9 +152,9 @@ merge_intervals <- function(df,
   merged
 }
 
-# -------------------------------------------------------------------------
 #' Compute Days‑At‑Home for each patient (early exit for deaths)
 #'
+#' @description
 #' All rows with a non‑`NA` `start_date` are treated as admission intervals.
 #' Overlapping intervals are merged (see `merge_intervals`).  If a patient
 #' dies inside the observation window the function returns `dah = 0` and
@@ -173,6 +169,7 @@ merge_intervals <- function(df,
 #'   (default `"intervention_date"`).
 #' @param death_date_col Column name for death date (default `"death_date"`).
 #'
+#' @importFrom stats aggregate
 #' @return A `data.frame` (one row per patient) with columns
 #'   `patient_id`, `index_date` (Date), `death_date` (Date or NA),
 #'   `dah`, `institutional_days`, `effective_window` (always = `window_days`),
@@ -287,9 +284,9 @@ compute_dah_per_patient <- function(data_clean,
   out
 }
 
-# -------------------------------------------------------------------------
 #' Summarise DAH at the cohort level
 #'
+#' @description
 #' Provides descriptive statistics for a cohort, including the number of
 #' deaths that occurred inside the observation window.
 #'
@@ -325,9 +322,9 @@ summarise_cohort <- function(per_pat, window_days = 30L) {
   )
 }
 
-# -------------------------------------------------------------------------
 #' Plot the distribution of Days‑At‑Home
 #'
+#' @description
 #' A histogram where bars are coloured by death‑in‑window status, with a
 #' vertical line for the window length and another for the median DAH.
 #' The y‑axis shows only whole numbers.
@@ -352,7 +349,7 @@ plot_dah_distribution <- function(per_pat, window_days = 30L) {
     n_pat, n_dead, pct_dead, mean_dah, median_dah
   )
 
-  ggplot(per_pat, aes(x = dah, fill = died_in_window)) +
+  ggplot(per_pat, aes(x = .data[["dah"]], fill = .data[["died_in_window"]])) +
     geom_histogram(binwidth = 1,
                    colour = "black",
                    boundary = -0.5) +
@@ -396,9 +393,9 @@ plot_dah_distribution <- function(per_pat, window_days = 30L) {
           plot.subtitle   = element_text(face = "italic"))
 }
 
-# -------------------------------------------------------------------------
 #' Run the complete DAH pipeline
 #'
+#' @description
 #' Accepts any long‑format data that contains at least `patient_id`,
 #' `start_date`, and `end_date`.  Optional columns are `intervention_date`
 #' (the anchor for the observation window) and `death_date`.  No event‑type
@@ -415,9 +412,9 @@ plot_dah_distribution <- function(per_pat, window_days = 30L) {
 #' @param death_date_col Column name for death date (default `"death_date"`).
 #' @param verbose Logical; retained for compatibility (no console output).
 #'
-#' @return A list with three components:\n
-#'   `per_patient` – per‑patient DAH table (date columns are `Date`),\n
-#'   `cohort_summary` – cohort‑level statistics,\n
+#' @return A list with three components:
+#'   `per_patient` – per‑patient DAH table (date columns are `Date`),
+#'   `cohort_summary` – cohort‑level statistics,
 #'   `plot` – histogram of DAH values.
 #' @export
 run_dah_pipeline <- function(
@@ -465,5 +462,12 @@ run_dah_pipeline <- function(
     per_patient    = per_pat,
     cohort_summary = cohort_sum,
     plot           = dah_plot
+  )
+}
+
+.silent_call_functions <- function(){
+  list(
+    lubridate::am(),
+    dplyr::add_count()
   )
 }

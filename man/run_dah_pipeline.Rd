@@ -34,9 +34,9 @@ run_dah_pipeline(
 \item{verbose}{Logical; retained for compatibility (no console output).}
 }
 \value{
-A list with three components:\n
-  `per_patient` – per‑patient DAH table (date columns are `Date`),\n
-  `cohort_summary` – cohort‑level statistics,\n
+A list with three components:
+  `per_patient` – per‑patient DAH table (date columns are `Date`),
+  `cohort_summary` – cohort‑level statistics,
   `plot` – histogram of DAH values.
 }
 \description{
