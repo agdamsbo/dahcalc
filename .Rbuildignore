@@ -10,3 +10,4 @@ NOTES
 ^CODE_OF_CONDUCT\.md$
 ^codecov\.yml$
 check.R
+^cran-comments\.md$
