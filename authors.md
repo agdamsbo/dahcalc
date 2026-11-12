@@ -10,15 +10,15 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/agdamsbo/dahcalc/blob/v2026.11.1/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/agdamsbo/dahcalc/blob/main/DESCRIPTION)
 
 Damsbo A, Ørskov K (2026). *dahcalc: Calculate Days-at-Home*. R package
-version 2026.7.1, <https://github.com/agdamsbo/dahcalc>.
+version 2026.11.1, <https://github.com/agdamsbo/dahcalc>.
 
     @Manual{,
       title = {dahcalc: Calculate Days-at-Home},
       author = {Andreas Gammelgaard Damsbo and Kim Morgenstjerne Ørskov},
       year = {2026},
-      note = {R package version 2026.7.1},
+      note = {R package version 2026.11.1},
       url = {https://github.com/agdamsbo/dahcalc},
     }
