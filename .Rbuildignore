@@ -11,3 +11,4 @@ NOTES
 ^codecov\.yml$
 check.R
 ^cran-comments\.md$
+^CRAN-SUBMISSION$

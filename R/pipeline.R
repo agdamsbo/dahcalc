@@ -72,7 +72,7 @@ validate_and_prepare <- function(data,
 #' @description
 #' Intervals are merged **only when they truly overlap**
 #' (`new_start <= current_end`).  Touching intervals (e.g. one ends on
-#' day 5 and the next starts on day 6) are left separate.
+#' day 5 and the next starts on day 6) are left separate.
 #'
 #' @param df A `data.frame` that must contain the columns `patient_id`,
 #'   `start_date`, `end_date`.  `end_date` may be `NA` (open‑ended interval).
