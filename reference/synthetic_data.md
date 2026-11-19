@@ -36,7 +36,7 @@ the \*\*DAH\*\* (Days‑At‑Home) analysis pipeline. The data are in
   death rows this is the actual date of death; for all other rows it is
   NA.
 
-The data contain \*\*40\*\* simulated patients. Approximately 30 
+The data contain \*\*40\*\* simulated patients. Approximately 30
 patients have a separate death row; the remaining patients survive the
 45‑day observation horizon. Hospital and rehabilitation stays are
 randomly generated, may overlap, and are limited to a maximum of 45 days
